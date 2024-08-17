@@ -1,44 +1,47 @@
-import java.util.Arrays;
 import java.util.Scanner;
 
-public class Main {
-    static long tar = 0;
-    static boolean tf = false;
-    public static boolean f(long x){
-        if(x==tar) return true;
-        if(!tf && x==(tar+1)) return true;
-        return false;
-    }
+public class test {
+    public static int minimizeRange(int[] arr) {
+        int operations = 0;
 
-    public static void main(String[] args){
-        Scanner in = new Scanner(System.in);
-        long n = in.nextLong();
-        long[] arr = new long[(int)n];
-        long sum = 0;
-        for(int i=0;i<n;i++){
-            arr[i] = in.nextLong();
-            sum += (long) arr[i];
-        }
-
-        tar = sum / (long) n;
-        tf = (sum % (long) n == 0);
-        Arrays.sort(arr);
-
-        int i=0,j=(int)n-1;
-        long ans = 0;
-        while(i<j){
-            while(i<j && f(arr[i])) i++;
-            while(i<j && f(arr[j])) j--;
-            if(i<j){
-                long tp = Math.min(tar-arr[i],arr[j]-tar);
-                arr[i] += tp;
-                arr[j] -= tp;
-                ans += tp;
+        int minIndex = 0, maxIndex = 0;
+        for (int i = 1; i < arr.length; i++) {
+            if (arr[i] < arr[minIndex]) {
+                minIndex = i;
+            }
+            if (arr[i] > arr[maxIndex]) {
+                maxIndex = i;
             }
         }
-        if(!tf){
-            if(arr[i]!=tar) ans += (long)(arr[i]-(tar+1));
+
+        while (arr[maxIndex] - arr[minIndex] > 1) {
+            arr[maxIndex]--;
+            arr[minIndex]++;
+            operations++;
+
+            for (int i = 0; i < arr.length; i++) {
+                if (arr[i] < arr[minIndex]) {
+                    minIndex = i;
+                }
+            }
+
+            for (int i = 0; i < arr.length; i++) {
+                if (arr[i] > arr[maxIndex]) {
+                    maxIndex = i;
+                }
+            }
         }
-        System.out.println(ans);
+
+        return operations;
+    }
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int n = in.nextInt();
+        int[] arr = new int[n];
+        for(int i=0;i<n;i++){
+            arr[i] = in.nextInt();
+        }
+        System.out.println(minimizeRange(arr));
     }
 }

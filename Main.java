@@ -1,47 +1,57 @@
+import java.util.Arrays;
 import java.util.Scanner;
 
-public class test {
-    public static int minimizeRange(int[] arr) {
-        int operations = 0;
-
-        int minIndex = 0, maxIndex = 0;
-        for (int i = 1; i < arr.length; i++) {
-            if (arr[i] < arr[minIndex]) {
-                minIndex = i;
-            }
-            if (arr[i] > arr[maxIndex]) {
-                maxIndex = i;
-            }
-        }
-
-        while (arr[maxIndex] - arr[minIndex] > 1) {
-            arr[maxIndex]--;
-            arr[minIndex]++;
-            operations++;
-
-            for (int i = 0; i < arr.length; i++) {
-                if (arr[i] < arr[minIndex]) {
-                    minIndex = i;
-                }
-            }
-
-            for (int i = 0; i < arr.length; i++) {
-                if (arr[i] > arr[maxIndex]) {
-                    maxIndex = i;
-                }
-            }
-        }
-
-        return operations;
+public class Main {
+    static long tar = 0;
+    static boolean tf = false;
+    public static boolean f(long x){
+        if(x==tar) return true;
+        if(!tf && x==(tar+1)) return true;
+        return false;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         Scanner in = new Scanner(System.in);
-        int n = in.nextInt();
-        int[] arr = new int[n];
+        long n = in.nextLong();
+        long[] arr = new long[(int)n];
+        long sum = 0;
         for(int i=0;i<n;i++){
-            arr[i] = in.nextInt();
+            arr[i] = in.nextLong();
+            sum += (long) arr[i];
         }
-        System.out.println(minimizeRange(arr));
+
+        tar = sum / (long) n;
+        tf = (sum % (long) n == 0);
+        Arrays.sort(arr);
+
+        int i=0,j=(int)n-1;
+        long ans = 0;
+
+        long num = sum - tar * n;
+        long num2 = 0;
+        for(int k = (int)n-1;k>=0;k--){
+            if(arr[k]>=(tar+1)) num2++;
+            else break;
+        }
+
+        while(i<j){
+            while(i<j && f(arr[i])) i++;
+            while(i<j && f(arr[j])) j--;
+            if(i<j){
+                long tp = Math.min(tar-arr[i],arr[j]-tar);
+                arr[i] += tp;
+                arr[j] -= tp;
+                ans += tp;
+            }
+        }
+        if(!tf){
+            if(arr[i]!=tar) ans += (long)(arr[i]-(tar+1));
+        }
+
+        if(!tf&&num2>0&&num2<num){
+            ans = ans - (num-num2-1);
+        }
+
+        System.out.println(ans);
     }
 }

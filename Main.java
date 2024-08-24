@@ -1,49 +1,92 @@
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.PriorityQueue;
 import java.util.Scanner;
 
 public class Main {
+    static int[] arr;
+    static int max,min1,min2;
+    static PriorityQueue<Integer> minQue,maxQue;
+    static HashMap<Integer,Integer> map;
+
+    public static void get(){
+        while (true){
+            int num = minQue.poll();
+            if(map.get(num)<=0) continue;
+            else{
+                min1 = num;
+                break;
+            }
+        }
+        while (true){
+            int num = minQue.poll();
+            if(map.get(num)<=0) continue;
+            else{
+                min2 = num;
+                break;
+            }
+        }
+        while (true){
+            int num = maxQue.poll();
+            if(map.get(num)<=0) continue;
+            else{
+                max = num;
+                break;
+            }
+        }
+        minQue.add(min1);
+        minQue.add(min2);
+        maxQue.add(max);
+    }
+
+
     public static void main(String[] args){
         Scanner in = new Scanner(System.in);
-        int n = in.nextInt(),m = in.nextInt(),k = in.nextInt();
-        int[][] arr = new int[n+1][m+1];
-        in.nextLine();
-        for(int i = 0;i<k;i++){
-            String c = in.nextLine();
-            String op = c.split(" ")[0];
-            int x = Integer.parseInt(c.split(" ")[1]), y = Integer.parseInt(c.split(" ")[2]);
-            if(op.equals("c")){
-                arr[x][y] = 1;
-            }else if(op.equals("l")){
-                int j = y-1;
-                for(;j>=1;j--){
-                    if(arr[x][j]==0) break;;
-                }
-                if(j>=1) System.out.println(x + " " + j);
-                else System.out.println(-1);
-            }else if(op.equals("r")){
-                int j = y+1;
-                for(;j<=m;j++){
-                    if(arr[x][j]==0) break;;
-                }
-                if(j<=m) System.out.println(x + " " + j);
-                else System.out.println(-1);
-            }else if(op.equals("u")){
-                int j = x-1;
-                for(;j>=1;j--){
-                    if(arr[j][y]==0) break;;
-                }
-                if(j>=1) System.out.println(j + " " + y);
-                else System.out.println(-1);
-            }else{
-                int j = x+1;
-                for(;j<=n;j++){
-                    if(arr[j][y]==0) break;;
-                }
-                if(j<=n) System.out.println(j + " " + y);
-                else System.out.println(-1);
-            }
+        int n = in.nextInt();
+        arr = new int[n];
+        for(int i=0;i<n;i++) arr[i] = in.nextInt();
 
+        minQue = new PriorityQueue<>();
+        maxQue = new PriorityQueue<>((a,b)->(b-a));
+
+        map = new HashMap<>();
+
+
+        int ansl=0,ansr=0;
+        int l=0,r=0;
+        for(r=0;r<n;r++){
+            if((r-l)<2){
+                minQue.add(arr[r]);
+                maxQue.add(arr[r]);
+                map.put(arr[r],map.getOrDefault(arr[r],0)+1);
+            }else{
+
+                minQue.add(arr[r]);
+                maxQue.add(arr[r]);
+                map.put(arr[r],map.getOrDefault(arr[r],0)+1);
+
+                get();
+
+                if((min1+min2)>max){
+                    if((r-l)>(ansr-ansl)){
+                        ansl=l;
+                        ansr=r;
+                    }
+                }else{
+                    while((r-l)>=2){
+                        map.put(arr[l],map.get(arr[l])-1);
+                        l++;
+                        get();
+                        if((min1+min2)>max) break;
+                    }
+                }
+            }
         }
 
+        System.out.println((ansl+1) + " " + (ansr+1));
+
     }
+
 }
+//9
+//2 3 3 3 1 1 3 3 3
